@@ -31,6 +31,8 @@ typedef NS_ENUM(NSInteger, DRSegmentControlItemAlignType) {
 @property (nonatomic,assign) CGFloat thumbProgress;
 @property (nonatomic,weak) id<DRSegmentControlDelegate> delegate;
 @property (nonatomic,strong) UIColor *itemTitleTextColor;
+@property (nonatomic,assign,readonly) DRSegmentControlItemAlignType itemAlignType;
+@property (nonatomic,assign,readonly) CGFloat thumbWidth;
 
 -(void)addItemStrings:(NSArray*)itemStringArray
         withThumbView:(UIView*)thumbView

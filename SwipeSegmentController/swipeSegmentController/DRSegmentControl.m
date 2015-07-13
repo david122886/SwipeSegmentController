@@ -51,6 +51,8 @@
        withThumbWidth:(NSInteger)thumbWidth
     withItemAlignType:(DRSegmentControlItemAlignType)alignType{
     [self clear];
+    _itemAlignType = alignType;
+    _thumbWidth = thumbWidth;
     _thumbView = thumbView;
     thumbView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:thumbView];
@@ -96,7 +98,13 @@
 
 -(void)setThumbProgress:(CGFloat)thumbProgress{
     _thumbProgress = thumbProgress;
-    self.thumbLeadingConstraint.constant = CGRectGetWidth(self.frame)*thumbProgress;
+    if (self.itemAlignType == DRSegmentControlItemAlignType_stretch || self.thumbWidth <= 0.000001) {
+        self.thumbLeadingConstraint.constant = CGRectGetWidth(self.frame)*thumbProgress;
+    }else{
+        CGFloat totalWidth = self.itemArray.count*self.thumbWidth;
+        self.thumbLeadingConstraint.constant = CGRectGetWidth(self.frame)/2 - totalWidth/2 + totalWidth*thumbProgress;
+    }
+    
     [UIView animateWithDuration:0.3 animations:^{
         [self layoutIfNeeded];
     }];
@@ -122,11 +130,13 @@
         ///均分
         CGFloat itemWidth = itemCount<=0?CGRectGetWidth([[UIScreen mainScreen] bounds]):CGRectGetWidth([[UIScreen mainScreen] bounds])/itemCount;
         [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
-        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-space-[thumbView]-space-|" options:0 metrics:@{@"space":@(kThumbTopMargin)} views:NSDictionaryOfVariableBindings(thumbView)]];
     }else{
         ///中间靠拢
-        
+        CGFloat totalWidth = itemCount*self.thumbWidth;
+        CGFloat left = CGRectGetWidth([[UIScreen mainScreen] bounds])/2 - totalWidth/2;
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(left)-[thumbView(==width)]" options:0 metrics:@{@"width":@(thumbWidth),@"left":@(left)} views:NSDictionaryOfVariableBindings(thumbView)]];
     }
+    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-space-[thumbView]-space-|" options:0 metrics:@{@"space":@(kThumbTopMargin)} views:NSDictionaryOfVariableBindings(thumbView)]];
     return constraints;
 }
 
@@ -138,22 +148,45 @@
 {
     NSMutableArray *constraints = @[].mutableCopy;
     __block UIButton *temp = nil;
-    NSInteger itemCount = itemsArray.count;
-    [itemsArray enumerateObjectsUsingBlock:^(UIButton *item, NSUInteger idx, BOOL *stop) {
-        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[item]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
-        if (!temp) {
-            [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[item]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
-        }else
-            if (idx == itemCount -1) {
-                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
-                [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    
+    if (itemWidth < 0.00001 || itemAlignType == DRSegmentControlItemAlignType_stretch) {
+        ///平铺
+        NSInteger itemCount = itemsArray.count;
+        [itemsArray enumerateObjectsUsingBlock:^(UIButton *item, NSUInteger idx, BOOL *stop) {
+            [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[item]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
+            if (!temp) {
+                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[item]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
+            }else
+                if (idx == itemCount -1) {
+                    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
+                    [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+                }else{
+                    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
+                    [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+                }
+            
+            temp = item;
+        }];
+    }else{
+        ///居中
+        NSInteger midIndex = itemsArray.count/2;
+        UIButton *item = [itemsArray objectAtIndex:midIndex];
+        if (itemsArray.count%2 == 0) {
+            [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:itemWidth/2.0]];
+        }else{
+            [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        }
+
+        [itemsArray enumerateObjectsUsingBlock:^(UIButton *item, NSUInteger idx, BOOL *stop) {
+            [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[item]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
+            if (temp) {
+                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"[temp][item(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(item,temp)]];
             }else{
-                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
-                [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"[item(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(item)]];
             }
-        
-        temp = item;
-    }];
+            temp = item;
+        }];
+    }
     return constraints;
 }
 #pragma mark -

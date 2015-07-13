@@ -46,18 +46,20 @@
     
     
     if ([segue.identifier isEqualToString:@"cover"]) {
-        [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3,c4,c5] withSegmentControl:[DRSegmentControl class]];
+        [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3,c4] withSegmentControl:[DRSegmentControl class]];
         
         UIView *thumbView = [[UIView alloc] init];
         thumbView.backgroundColor = [UIColor greenColor];
         thumbView.layer.cornerRadius = 15;
         
         [(SwipeSegmentViewController*)segue.destinationViewController setThumbView:thumbView];
+        [(SwipeSegmentViewController*)segue.destinationViewController setThumbViewWidth:70];
+        [(SwipeSegmentViewController*)segue.destinationViewController setSegmentAlignType:DRSegmentControlItemAlignType_center];
     }else if([segue.identifier isEqualToString:@"underline"]){
-        [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3,c4,c5] withSegmentControl:[DRUnderlineSegmentControl class]];
+        [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3] withSegmentControl:[DRUnderlineSegmentControl class]];
     }else{
         UINavigationController *navi = segue.destinationViewController;
-        [(SwipeSegmentViewController*)[navi.viewControllers lastObject] addChildViewControllers:@[c1,c2,c3,c4,c5] withSegmentControl:[DRUnderlineSegmentControl class]];
+        [(SwipeSegmentViewController*)[navi.viewControllers lastObject] addChildViewControllers:@[c1,c2,c3] withSegmentControl:[DRUnderlineSegmentControl class]];
     }
 }
 @end
