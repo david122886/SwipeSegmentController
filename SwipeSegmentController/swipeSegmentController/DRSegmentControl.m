@@ -36,12 +36,6 @@
     bt.tag = tag + kSegmentItemStartTag;
     return bt;
 }
--(NSInteger)getThumbViewWidthWithItemStringArray:(NSArray*)itemStringArray{
-    if (!itemStringArray || itemStringArray.count <= 0) {
-        return CGRectGetWidth([[UIScreen mainScreen] bounds]);
-    }
-    return CGRectGetWidth([[UIScreen mainScreen] bounds])/itemStringArray.count;
-}
 
 -(void)clear{
     if (self.thumbView) {
@@ -52,14 +46,16 @@
     }];
 }
 
--(void)addItemStrings:(NSArray*)itemStringArray withThumbView:(UIView*)thumbView{
+-(void)addItemStrings:(NSArray*)itemStringArray
+        withThumbView:(UIView*)thumbView
+       withThumbWidth:(NSInteger)thumbWidth
+    withItemAlignType:(DRSegmentControlItemAlignType)alignType{
     [self clear];
     _thumbView = thumbView;
     thumbView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:thumbView];
     
-    NSInteger thumbWidth = [self getThumbViewWidthWithItemStringArray:itemStringArray];
-    NSArray *thumbConstraints = [self thumbConstraintsWithThumbWidth:thumbWidth withThumbView:thumbView];
+    NSArray *thumbConstraints = [self thumbConstraintsWithThumbWidth:thumbWidth withThumbView:thumbView withSegmentItemAlignType:alignType withItemCount:itemStringArray.count];
     [self addConstraints:thumbConstraints];
     [thumbConstraints enumerateObjectsUsingBlock:^(NSLayoutConstraint *constraint, NSUInteger idx, BOOL *stop) {
         if (constraint.firstItem == thumbView && constraint.firstAttribute == NSLayoutAttributeLeading) {
@@ -70,29 +66,15 @@
     
     NSMutableArray *items = @[].mutableCopy;
     __block UIButton *temp = nil;
-    NSInteger itemCount = itemStringArray.count;
     [itemStringArray enumerateObjectsUsingBlock:^(NSString *itemString, NSUInteger idx, BOOL *stop) {
         UIButton *item = [self getItemWithTag:idx withTitle:itemString];
         item.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:item];
-        
-        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[item]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
-        if (!temp) {
-            [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[item]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
-        }else
-        if (idx == itemCount -1) {
-            [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-        }else{
-            [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
-            [self addConstraint:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-        }
-
         temp = item;
         [items addObject:item];
     }];
     self.itemArray = items;
-    
+    [self addConstraints:[self segmentItemsConstraintsWithItemWidth:thumbWidth withSegmentItemAlignType:alignType withItems:self.itemArray]];
     [self layoutIfNeeded];
 }
 
@@ -118,7 +100,6 @@
     [UIView animateWithDuration:0.3 animations:^{
         [self layoutIfNeeded];
     }];
-    
 }
 
 -(void)setItemTitleTextColor:(UIColor *)itemTitleTextColor{
@@ -131,12 +112,49 @@
 
 #pragma mark -
 #pragma mark -- 子类继承实现
--(NSArray*)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth withThumbView:(UIView*)thumbView{
-    NSMutableArray *constraints = @[].mutableCopy;
-    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(thumbWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
-    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-space-[thumbView]-space-|" options:0 metrics:@{@"space":@(kThumbTopMargin)} views:NSDictionaryOfVariableBindings(thumbView)]];
+-(NSArray*)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth
+                            withThumbView:(UIView*)thumbView
+                 withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+                            withItemCount:(NSInteger)itemCount
+{
+     NSMutableArray *constraints = @[].mutableCopy;
+    if (thumbWidth < 0.00001 || itemAlignType == DRSegmentControlItemAlignType_stretch) {
+        ///均分
+        CGFloat itemWidth = itemCount<=0?CGRectGetWidth([[UIScreen mainScreen] bounds]):CGRectGetWidth([[UIScreen mainScreen] bounds])/itemCount;
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-space-[thumbView]-space-|" options:0 metrics:@{@"space":@(kThumbTopMargin)} views:NSDictionaryOfVariableBindings(thumbView)]];
+    }else{
+        ///中间靠拢
+        
+    }
     return constraints;
 }
 
+
+///实现自己分段控件item布局 autolayout
+-(NSArray*)segmentItemsConstraintsWithItemWidth:(CGFloat)itemWidth
+                       withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+                                      withItems:(NSArray*)itemsArray
+{
+    NSMutableArray *constraints = @[].mutableCopy;
+    __block UIButton *temp = nil;
+    NSInteger itemCount = itemsArray.count;
+    [itemsArray enumerateObjectsUsingBlock:^(UIButton *item, NSUInteger idx, BOOL *stop) {
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[item]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
+        if (!temp) {
+            [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[item]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item)]];
+        }else
+            if (idx == itemCount -1) {
+                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
+                [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+            }else{
+                [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[temp][item(==temp)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(item,temp)]];
+                [constraints addObject:[NSLayoutConstraint constraintWithItem:item attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:temp attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+            }
+        
+        temp = item;
+    }];
+    return constraints;
+}
 #pragma mark -
 @end

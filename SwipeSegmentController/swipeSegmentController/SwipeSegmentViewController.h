@@ -11,6 +11,11 @@
 #import "DRSegmentControl.h"
 #import "DRUnderlineSegmentControl.h"
 @interface SwipeSegmentViewController : UIViewController
+///顶部滑竿view
 @property (nonatomic,strong) UIView *thumbView;
+///顶部滑竿view宽度，不指定宽度的话均分分段控件宽度
+@property (nonatomic,assign) NSInteger thumbViewWidth;
+///分段控件里面每项对齐方式，默认平铺均分效果
+@property (nonatomic,assign) DRSegmentControlItemAlignType segmentAlignType;
 -(void)addChildViewControllers:(NSArray*)childControllers withSegmentControl:(Class)segmentControl;
 @end

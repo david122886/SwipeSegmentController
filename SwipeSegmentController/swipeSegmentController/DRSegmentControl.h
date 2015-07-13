@@ -7,6 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSInteger, DRSegmentControlItemAlignType) {
+    ///拉伸均分
+    DRSegmentControlItemAlignType_stretch,
+    ///靠拢居中
+    DRSegmentControlItemAlignType_center
+    ///靠拢左对齐
+//    DRSegmentControlItemAlignType_left,
+    ///靠拢右对齐
+//    DRSegmentControlItemAlignType_right
+};
 @class DRSegmentControl;
 @protocol DRSegmentControlDelegate <NSObject>
 -(void)segmentControl:(DRSegmentControl*)segmentControl withSelectedAtIndex:(NSInteger)index;
@@ -22,12 +32,23 @@
 @property (nonatomic,weak) id<DRSegmentControlDelegate> delegate;
 @property (nonatomic,strong) UIColor *itemTitleTextColor;
 
--(void)addItemStrings:(NSArray*)itemStringArray withThumbView:(UIView*)thumbView;
+-(void)addItemStrings:(NSArray*)itemStringArray
+        withThumbView:(UIView*)thumbView
+       withThumbWidth:(NSInteger)thumbWidth
+    withItemAlignType:(DRSegmentControlItemAlignType)alignType;
 -(void)setSelectedIndexWithoutAction:(NSInteger)selectedIndex;
 
 #pragma mark -
 #pragma mark -- 子类继承实现
 ///实现自己thumb autolayout
--(NSArray*)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth withThumbView:(UIView*)thumbView;
+-(NSArray*)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth
+                            withThumbView:(UIView*)thumbView
+                 withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+                            withItemCount:(NSInteger)itemCount;
+
+///实现自己分段控件item布局 autolayout
+-(NSArray*)segmentItemsConstraintsWithItemWidth:(CGFloat)itemWidth
+                       withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+                                      withItems:(NSArray*)items;
 #pragma mark -
 @end

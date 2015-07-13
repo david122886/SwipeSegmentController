@@ -107,7 +107,7 @@
         self.thumbView.layer.cornerRadius = 18;
     }
     
-    [self.segmentControlView addItemStrings:titles withThumbView:self.thumbView];
+    [self.segmentControlView addItemStrings:titles withThumbView:self.thumbView withThumbWidth:self.thumbViewWidth withItemAlignType:self.segmentAlignType];
 }
 
 -(void)setupContentScrollViewData{

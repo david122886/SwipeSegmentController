@@ -17,10 +17,30 @@
     // Drawing code
 }
 */
--(NSArray *)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth withThumbView:(UIView *)thumbView{
+-(NSArray *)thumbConstraintsWithThumbWidth:(CGFloat)thumbWidth
+                             withThumbView:(UIView *)thumbView
+                  withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+                             withItemCount:(NSInteger)itemCount
+{
     NSMutableArray *constraints = @[].mutableCopy;
-    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(thumbWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
-    [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[thumbView(==2)]-1-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(thumbView)]];
+    if (thumbWidth < 0.00001 || itemAlignType == DRSegmentControlItemAlignType_stretch) {
+        ///均分
+        CGFloat itemWidth = itemCount<=0?CGRectGetWidth([[UIScreen mainScreen] bounds]):CGRectGetWidth([[UIScreen mainScreen] bounds])/itemCount;
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[thumbView(==2)]-1-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(thumbView)]];
+    }else{
+        ///中间靠拢
+        
+    }
     return constraints;
 }
+
+/////实现自己分段控件item布局 autolayout
+//-(NSArray*)segmentItemsConstraintsWithItemWidth:(CGFloat)itemWidth
+//                       withSegmentItemAlignType:(DRSegmentControlItemAlignType)itemAlignType
+//                                      withItems:(NSArray*)items
+//{
+//    
+//    return nil;
+//}
 @end

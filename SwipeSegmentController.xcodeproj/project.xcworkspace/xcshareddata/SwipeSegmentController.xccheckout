@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>320FFFED-6BFE-4909-B897-6CA87AE77C30</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SwipeSegmentController</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>629951C9C0B585A87352C5380F1F4CA2EA1FBF5D</key>
+		<string>github.com:david122886/SwipeSegmentController.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SwipeSegmentController.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>629951C9C0B585A87352C5380F1F4CA2EA1FBF5D</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:david122886/SwipeSegmentController.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>629951C9C0B585A87352C5380F1F4CA2EA1FBF5D</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>629951C9C0B585A87352C5380F1F4CA2EA1FBF5D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SwipeSegmentController</string>
+		</dict>
+	</array>
+</dict>
+</plist>
