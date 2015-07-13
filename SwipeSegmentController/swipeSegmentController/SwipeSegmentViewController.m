@@ -123,8 +123,27 @@
         [self.contentScrollView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
         self.hasAddKVOForScrollView = YES;
     }
+    
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        [vc beginAppearanceTransition:YES animated:animated];
+    }];
+    
 }
 
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        [vc endAppearanceTransition];
+    }];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        [vc endAppearanceTransition];
+    }];
+}
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     if (self.hasAddKVOForScrollView) {
@@ -132,7 +151,11 @@
         self.hasAddKVOForScrollView = NO;
     }
     
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        [vc beginAppearanceTransition:NO animated:animated];
+    }];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -175,7 +198,7 @@
            withThumbColor:(UIColor*)thumbColor{
     NSMutableArray *childenVC = @[].mutableCopy;
     [titleStrings enumerateObjectsUsingBlock:^(NSString *title, NSUInteger idx, BOOL *stop) {
-        UIViewController *cv = [[UIViewController alloc] init];
+        DRSegmentViewController *cv = [[DRSegmentViewController alloc] init];
         cv.title = title;
         [childenVC addObject:cv];
     }];
@@ -193,11 +216,51 @@
 #pragma mark -
 #pragma mark -- UIScrollViewDelegate
 -(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
-    
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewDidEndDecelerating:scrollView];
+        }
+    }];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+        }
+    }];
+}
+
+-(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewDidEndScrollingAnimation:scrollView];
+        }
+    }];
 }
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewDidScroll:scrollView];
+        }
+    }];
+}
+
+-(void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewWillBeginDecelerating:scrollView];
+        }
+    }];
+}
+
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    [self.childControllerArray enumerateObjectsUsingBlock:^(UIViewController *vc, NSUInteger idx, BOOL *stop) {
+        if ([vc isKindOfClass:[DRSegmentViewController class]]) {
+            [(DRSegmentViewController*)vc segmentScrollViewWillBeginDragging:scrollView];
+        }
+    }];
 }
 #pragma mark -
 

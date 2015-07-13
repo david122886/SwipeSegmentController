@@ -8,7 +8,7 @@
 
 #import "DRSegmentViewController.h"
 
-@interface DRSegmentViewController ()
+@interface DRSegmentViewController ()<UIScrollViewDelegate>
 
 @end
 
@@ -24,14 +24,18 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark -
+#pragma mark -- content view左右切换时scrollview回调，子类可以重写，不能主动调用
+-(void)segmentScrollViewDidEndDecelerating:(UIScrollView *)scrollView{}
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+-(void)segmentScrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{}
 
+-(void)segmentScrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{}
+
+-(void)segmentScrollViewDidScroll:(UIScrollView *)scrollView{}
+
+-(void)segmentScrollViewWillBeginDecelerating:(UIScrollView *)scrollView{}
+
+-(void)segmentScrollViewWillBeginDragging:(UIScrollView *)scrollView{}
+#pragma mark -
 @end
