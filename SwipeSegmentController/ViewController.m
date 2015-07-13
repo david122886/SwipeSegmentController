@@ -59,7 +59,12 @@
         [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3] withSegmentControl:[DRUnderlineSegmentControl class]];
     }else{
         UINavigationController *navi = segue.destinationViewController;
-        [(SwipeSegmentViewController*)[navi.viewControllers lastObject] addChildViewTitles:@[@"test1",@"test2",@"test3"] withSegmentControl:[DRUnderlineSegmentControl class] withSegmentItemAlignType:DRSegmentControlItemAlignType_center withThumbViewWidth:70 withThumbColor:[UIColor orangeColor]];
+        SwipeSegmentViewController *controller = (SwipeSegmentViewController*)[navi.viewControllers lastObject];
+        [controller addChildViewTitles:@[@"test1",@"test2",@"test3"]
+                    withSegmentControl:[DRUnderlineSegmentControl class]
+              withSegmentItemAlignType:DRSegmentControlItemAlignType_center
+                    withThumbViewWidth:70
+                        withThumbColor:[UIColor orangeColor]];
     }
 }
 @end
