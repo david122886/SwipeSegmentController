@@ -29,7 +29,9 @@
         [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(itemWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
     }else{
         ///中间靠拢
-        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[thumbView(==width)]" options:0 metrics:@{@"width":@(thumbWidth)} views:NSDictionaryOfVariableBindings(thumbView)]];
+        CGFloat totalWidth = itemCount*self.thumbWidth;
+        CGFloat left = CGRectGetWidth([[UIScreen mainScreen] bounds])/2 - totalWidth/2;
+        [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(left)-[thumbView(==width)]" options:0 metrics:@{@"width":@(thumbWidth),@"left":@(left)} views:NSDictionaryOfVariableBindings(thumbView)]];
     }
     
     [constraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[thumbView(==2)]-1-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(thumbView)]];

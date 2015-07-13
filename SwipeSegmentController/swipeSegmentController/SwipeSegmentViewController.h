@@ -18,4 +18,10 @@
 ///分段控件里面每项对齐方式，默认平铺均分效果
 @property (nonatomic,assign) DRSegmentControlItemAlignType segmentAlignType;
 -(void)addChildViewControllers:(NSArray*)childControllers withSegmentControl:(Class)segmentControl;
+
+-(void)addChildViewTitles:(NSArray*)titleStrings
+       withSegmentControl:(Class)segmentControl
+ withSegmentItemAlignType:(DRSegmentControlItemAlignType)alignType
+       withThumbViewWidth:(NSInteger)thumbWidth
+           withThumbColor:(UIColor*)thumbColor;
 @end

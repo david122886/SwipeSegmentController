@@ -53,13 +53,13 @@
         thumbView.layer.cornerRadius = 15;
         
         [(SwipeSegmentViewController*)segue.destinationViewController setThumbView:thumbView];
-        [(SwipeSegmentViewController*)segue.destinationViewController setThumbViewWidth:70];
+        [(SwipeSegmentViewController*)segue.destinationViewController setThumbViewWidth:90];
         [(SwipeSegmentViewController*)segue.destinationViewController setSegmentAlignType:DRSegmentControlItemAlignType_center];
     }else if([segue.identifier isEqualToString:@"underline"]){
         [(SwipeSegmentViewController*)segue.destinationViewController addChildViewControllers:@[c1,c2,c3] withSegmentControl:[DRUnderlineSegmentControl class]];
     }else{
         UINavigationController *navi = segue.destinationViewController;
-        [(SwipeSegmentViewController*)[navi.viewControllers lastObject] addChildViewControllers:@[c1,c2,c3] withSegmentControl:[DRUnderlineSegmentControl class]];
+        [(SwipeSegmentViewController*)[navi.viewControllers lastObject] addChildViewTitles:@[@"test1",@"test2",@"test3"] withSegmentControl:[DRUnderlineSegmentControl class] withSegmentItemAlignType:DRSegmentControlItemAlignType_center withThumbViewWidth:70 withThumbColor:[UIColor orangeColor]];
     }
 }
 @end

@@ -7,7 +7,7 @@
 //
 
 #import "SwipeSegmentViewController.h"
-
+#import <objc/runtime.h>
 @interface SwipeSegmentViewController ()<UIScrollViewDelegate,DRSegmentControlDelegate>
 @property (nonatomic,strong) NSArray *childControllerArray;
 
@@ -166,6 +166,28 @@
     
     [self.segmentControlView removeFromSuperview];
     self.segmentControlView = [[segmentControl alloc] init];
+}
+
+-(void)addChildViewTitles:(NSArray*)titleStrings
+       withSegmentControl:(Class)segmentControl
+ withSegmentItemAlignType:(DRSegmentControlItemAlignType)alignType
+       withThumbViewWidth:(NSInteger)thumbWidth
+           withThumbColor:(UIColor*)thumbColor{
+    NSMutableArray *childenVC = @[].mutableCopy;
+    [titleStrings enumerateObjectsUsingBlock:^(NSString *title, NSUInteger idx, BOOL *stop) {
+        UIViewController *cv = [[UIViewController alloc] init];
+        cv.title = title;
+        [childenVC addObject:cv];
+    }];
+    
+    [self addChildViewControllers:childenVC withSegmentControl:segmentControl];
+    self.segmentAlignType = alignType;
+    self.thumbViewWidth = thumbWidth;
+    self.thumbView = [[UIView alloc] init];
+    self.thumbView.backgroundColor = thumbColor;
+    NSString *className = [[NSString alloc] initWithCString:class_getName(segmentControl) encoding:NSUTF8StringEncoding];
+    NSString *underlineClassName = [[NSString alloc] initWithCString:class_getName([DRUnderlineSegmentControl class]) encoding:NSUTF8StringEncoding];
+    self.thumbView.layer.cornerRadius = [className isEqualToString:underlineClassName]?2:18;
 }
 
 #pragma mark -
